@@ -2,6 +2,7 @@ import { Controller, Get, Sse } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Observable } from 'rxjs';
 import { exec } from 'child_process';
+import { readFileSync } from 'fs';
 
 @Controller()
 export class AppController {
@@ -35,6 +36,14 @@ export class AppController {
       childProcess.stdout.on('data', (msg) => {
         observer.next({ data: { msg: msg.toString() } });
       });
+    });
+  }
+
+  @Sse('stream3')
+  stream3() {
+    return new Observable((observer) => {
+      const json = readFileSync('./package.json').toJSON();
+      observer.next({ data: { msg: json } });
     });
   }
 }
